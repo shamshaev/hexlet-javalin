@@ -4,6 +4,9 @@ import io.javalin.Javalin;
 import io.javalin.http.NotFoundResponse;
 import io.javalin.rendering.template.JavalinJte;
 import static io.javalin.rendering.template.TemplateUtil.model;
+
+import org.example.hexlet.dto.hello.HelloPage;
+import org.example.hexlet.dto.users.UserPage;
 import org.example.hexlet.model.Course;
 import org.example.hexlet.dto.courses.CoursePage;
 
@@ -24,19 +27,22 @@ public class HelloWorld {
             config.fileRenderer(new JavalinJte());
         });
 
-        app.get("/", ctx -> ctx.result("This is Javalin app in action"));
-        app.get("/users", ctx -> ctx.result("GET /users"));
-        app.post("/users", ctx -> ctx.result("POST /users"));
+        app.get("/", ctx -> ctx.render("index.jte"));
+
+        app.get("/users", ctx -> ctx.render("users/index1.jte"));
+        app.post("/users", ctx -> ctx.render("users/index2.jte"));
 
         app.get("/hello", ctx -> {
             var name = ctx.queryParam("name") != null ? ctx.queryParam("name") : "World";
-            ctx.result("Hello, " + name + "!");
+            var page = new HelloPage(name);
+            ctx.render("hello/index.jte", model("page", page));
         });
 
         app.get("/users/{id}/posts/{postId}", ctx -> {
             var id = ctx.pathParamAsClass("id", Integer.class).get();
             var postId = ctx.pathParamAsClass("postId", Integer.class).get();
-            ctx.result("User ID: " + id + ", post ID: " + postId);
+            var page = new UserPage(id, postId);
+            ctx.render("users/index3.jte", model("page", page));
         });
 
         app.get("/courses/{id}", ctx -> {
