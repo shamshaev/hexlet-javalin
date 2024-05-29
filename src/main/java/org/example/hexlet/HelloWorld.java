@@ -6,6 +6,7 @@ import io.javalin.rendering.template.JavalinJte;
 import static io.javalin.rendering.template.TemplateUtil.model;
 
 import org.example.hexlet.dto.hello.HelloPage;
+import org.example.hexlet.dto.users.IdPage;
 import org.example.hexlet.dto.users.UserPage;
 import org.example.hexlet.model.Course;
 import org.example.hexlet.dto.courses.CoursePage;
@@ -53,6 +54,12 @@ public class HelloWorld {
                     .orElseThrow(() -> new NotFoundResponse("Course not found"));
             var page = new CoursePage(course);
             ctx.render("courses/index.jte", model("page", page));
+        });
+
+        app.get("/users/{id}", ctx -> {
+            var id = ctx.pathParam("id");
+            var page = new IdPage(id);
+            ctx.render("users/index4.jte", model("page", page));
         });
 
         app.start(7070);

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module version="4">
+  <component name="AdditionalModuleElements">
+    <content url="file://$MODULE_DIR$" dumb="true">
+      <excludeFolder url="file://$MODULE_DIR$/jte-classes" />
+      <excludeFolder url="file://$MODULE_DIR$/jte-classes/gg/jte/generated/ondemand/hello" />
+      <excludeFolder url="file://$MODULE_DIR$/jte-classes/gg/jte/generated/ondemand/layout" />
+      <excludeFolder url="file://$MODULE_DIR$/jte-classes/gg/jte/generated/ondemand/users" />
+    </content>
+  </component>
+</module>
