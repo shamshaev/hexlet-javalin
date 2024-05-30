@@ -1,9 +1,19 @@
-@import org.example.hexlet.dto.courses.CoursePage
-@param CoursePage page
+@import org.example.hexlet.dto.courses.CoursesPage
+@param CoursesPage page
 
 @template.layout.page(
-    content = @`
-        <h1>${page.getCourse().getName()}</h1>
-        <p style="font-size: 24px;">${page.getCourse().getDescription()}</p>
-    `
+content = @`
+    <div style="height: 600px; overflow: auto;">
+        <form action="/courses" method="get">
+            <input type="search" name="term" value="${page.getTerm()}" />
+            <input type="submit" value="Search" />
+        </form>
+        @for(var course : page.getCourses())
+            <div style="font-size: 20; padding-top: 20px;">
+                <span style="font-weight: bold">${course.getName()}</span>
+                <span style="font-weight: normal">${course.getDescription()}</span>
+            </div>
+        @endfor
+    </div>
+`
 )

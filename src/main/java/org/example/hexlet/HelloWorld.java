@@ -5,12 +5,14 @@ import io.javalin.http.NotFoundResponse;
 import io.javalin.rendering.template.JavalinJte;
 import static io.javalin.rendering.template.TemplateUtil.model;
 
+import org.example.hexlet.dto.courses.CoursesPage;
 import org.example.hexlet.dto.hello.HelloPage;
 import org.example.hexlet.dto.users.IdPage;
 import org.example.hexlet.dto.users.UserPage;
 import org.example.hexlet.model.Course;
 import org.example.hexlet.dto.courses.CoursePage;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class HelloWorld {
@@ -46,6 +48,18 @@ public class HelloWorld {
             ctx.render("users/index3.jte", model("page", page));
         });
 
+        app.get("/courses", ctx -> {
+            var term = ctx.queryParam("term");
+            var courses = new ArrayList<>(COURSES);
+
+            if (term != null) {
+                courses.removeIf(course -> !course.getDescription().contains(term));
+            }
+
+            var page = new CoursesPage(courses, term);
+            ctx.render("courses/index.jte", model("page", page));
+        });
+
         app.get("/courses/{id}", ctx -> {
             var id = ctx.pathParamAsClass("id", Long.class).get();
             var course = COURSES.stream()
@@ -53,7 +67,7 @@ public class HelloWorld {
                     .findAny()
                     .orElseThrow(() -> new NotFoundResponse("Course not found"));
             var page = new CoursePage(course);
-            ctx.render("courses/index.jte", model("page", page));
+            ctx.render("courses/show.jte", model("page", page));
         });
 
         app.get("/users/{id}", ctx -> {
