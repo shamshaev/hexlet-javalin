@@ -7,10 +7,12 @@ import static io.javalin.rendering.template.TemplateUtil.model;
 
 import org.example.hexlet.dto.courses.CoursesPage;
 import org.example.hexlet.dto.hello.HelloPage;
-import org.example.hexlet.dto.users.IdPage;
 import org.example.hexlet.dto.users.UserPage;
+import org.example.hexlet.dto.users.UsersPage;
 import org.example.hexlet.model.Course;
 import org.example.hexlet.dto.courses.CoursePage;
+import org.example.hexlet.model.User;
+import org.example.hexlet.repository.UserRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,15 +27,16 @@ public class HelloWorld {
 
     public static void main(String[] args) {
 
+        UserRepository.save(new User("john", "john@google.com", "jobs2349"));
+        UserRepository.save(new User("justin", "justin@yahoo.com", "miracle65"));
+        UserRepository.save(new User("natasha", "natasha@apple.com", "great12_4"));
+
         var app = Javalin.create(config -> {
             config.bundledPlugins.enableDevLogging();
             config.fileRenderer(new JavalinJte());
         });
 
         app.get("/", ctx -> ctx.render("index.jte"));
-
-        app.get("/users", ctx -> ctx.render("users/index1.jte"));
-        app.post("/users", ctx -> ctx.render("users/index2.jte"));
 
         app.get("/hello", ctx -> {
             var name = ctx.queryParam("name") != null ? ctx.queryParam("name") : "World";
@@ -70,12 +73,26 @@ public class HelloWorld {
             ctx.render("courses/show.jte", model("page", page));
         });
 
-        app.get("/users/{id}", ctx -> {
-            var id = ctx.pathParam("id");
-            var page = new IdPage(id);
-            ctx.render("users/index4.jte", model("page", page));
+        app.get("/users", ctx -> {
+            var users = UserRepository.getEntities();
+            var page = new UsersPage(users);
+            ctx.render("users/index1.jte", model("page", page));
         });
 
+        app.get("/users/build", ctx -> {
+            ctx.render("users/build.jte");
+        });
+
+        app.post("/users", ctx -> {
+            var name = ctx.formParam("name");
+            var email = ctx.formParam("email");
+            var password = ctx.formParam("password");
+
+            var user = new User(name, email, password);
+            UserRepository.save(user);
+            ctx.redirect("/users");
+        });
+        
         app.start(7070);
     }
 }
