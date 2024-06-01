@@ -1,3 +1,4 @@
+@import org.example.hexlet.NamedRoutes
 @import gg.jte.Content
 @param Content content
 
@@ -9,10 +10,14 @@
     <title>Hexlet Javalin Training</title>
 </head>
 <body>
-    <h2 style="text-align: center;"><a href="/">Main page</a></h2>
+    <h1 style="text-align: center; font-size: 24px; font-weight: bold;">
+        <span style="padding: 20px;"><a href="/">Main page</a></span>
+        <span style="padding: 20px;"><a href="${NamedRoutes.usersPath()}">Users</a></span>
+        <span style="padding: 20px;"><a href="${NamedRoutes.coursesPath()}">Courses</a></span>
+    </h1>
     <div style="text-align: center; margin-top: 300px;">${content}</div>
     <h3 style="text-align: center; position: absolute; bottom: 0; width: 100%;">
-        <a href="https://github.com/shamshaev">My GitHub profile</a>
+        <a href="${NamedRoutes.gitHubPath()}">My GitHub profile</a>
     </h3>
 </body>
 </html>

@@ -3,6 +3,6 @@
 
 @template.layout.page(
     content = @`
-        <p>${"User ID: " + page.getId() + ", post ID: " + page.getPostid()}</p>
+        <p style="font-size: 22px;">${"User ID: " + page.getId() + ", post ID: " + page.getPostid()}</p>
     `
 )

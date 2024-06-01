@@ -40,20 +40,20 @@ public class HelloWorld {
 
         app.get("/", ctx -> ctx.render("index.jte"));
 
-        app.get("/hello", ctx -> {
+        app.get(NamedRoutes.helloPath(), ctx -> {
             var name = ctx.queryParam("name") != null ? ctx.queryParam("name") : "World";
             var page = new HelloPage(name);
             ctx.render("hello/index.jte", model("page", page));
         });
 
-        app.get("/users/{id}/posts/{postId}", ctx -> {
+        app.get(NamedRoutes.usersPostsPath("{id}", "{postId}"), ctx -> {
             var id = ctx.pathParamAsClass("id", Integer.class).get();
             var postId = ctx.pathParamAsClass("postId", Integer.class).get();
             var page = new UserPage(id, postId);
-            ctx.render("users/index3.jte", model("page", page));
+            ctx.render("users/index2.jte", model("page", page));
         });
 
-        app.get("/courses", ctx -> {
+        app.get(NamedRoutes.coursesPath(), ctx -> {
             var term = ctx.queryParam("term");
             var courses = new ArrayList<>(COURSES);
 
@@ -65,7 +65,7 @@ public class HelloWorld {
             ctx.render("courses/index.jte", model("page", page));
         });
 
-        app.get("/courses/{id}", ctx -> {
+        app.get(NamedRoutes.coursePath("{id}"), ctx -> {
             var id = ctx.pathParamAsClass("id", Long.class).get();
             var course = COURSES.stream()
                     .filter(c -> c.getId().equals(id))
@@ -75,18 +75,18 @@ public class HelloWorld {
             ctx.render("courses/show.jte", model("page", page));
         });
 
-        app.get("/users", ctx -> {
+        app.get(NamedRoutes.usersPath(), ctx -> {
             var users = UserRepository.getEntities();
             var page = new UsersPage(users);
             ctx.render("users/index1.jte", model("page", page));
         });
 
-        app.get("/users/build", ctx -> {
+        app.get(NamedRoutes.buildUserPath(), ctx -> {
             var page = new BuildUserPage();
             ctx.render("users/build.jte", model("page", page));
         });
 
-        app.post("/users", ctx -> {
+        app.post(NamedRoutes.usersPath(), ctx -> {
 
             var email = ctx.formParam("email");
             var name = ctx.formParam("name");
@@ -96,7 +96,7 @@ public class HelloWorld {
 
                 name = ctx.formParamAsClass("name", String.class)
                         .check(value -> value.length() > 1, "Слишком короткое имя")
-                        .check(value -> !value.equals("l"), "Эта буква в имени не допускатеся")
+                        .check(value -> !value.equals("l"), "Эта буква в имени не допускается")
                         .get();
 
                 var password = ctx.formParamAsClass("password", String.class)
@@ -104,7 +104,7 @@ public class HelloWorld {
                         .get();
                 var user = new User(name, email, password);
                 UserRepository.save(user);
-                ctx.redirect("/users");
+                ctx.redirect(NamedRoutes.usersPath());
             } catch (ValidationException e) {
                 var page = new BuildUserPage(name, email, e.getErrors());
                 System.out.println(e.getErrors());
