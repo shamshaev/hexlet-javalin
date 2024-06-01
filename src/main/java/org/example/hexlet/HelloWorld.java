@@ -5,8 +5,10 @@ import io.javalin.http.NotFoundResponse;
 import io.javalin.rendering.template.JavalinJte;
 import static io.javalin.rendering.template.TemplateUtil.model;
 
+import io.javalin.validation.ValidationException;
 import org.example.hexlet.dto.courses.CoursesPage;
 import org.example.hexlet.dto.hello.HelloPage;
+import org.example.hexlet.dto.users.BuildUserPage;
 import org.example.hexlet.dto.users.UserPage;
 import org.example.hexlet.dto.users.UsersPage;
 import org.example.hexlet.model.Course;
@@ -80,17 +82,34 @@ public class HelloWorld {
         });
 
         app.get("/users/build", ctx -> {
-            ctx.render("users/build.jte");
+            var page = new BuildUserPage();
+            ctx.render("users/build.jte", model("page", page));
         });
 
         app.post("/users", ctx -> {
-            var name = ctx.formParam("name");
-            var email = ctx.formParam("email");
-            var password = ctx.formParam("password");
 
-            var user = new User(name, email, password);
-            UserRepository.save(user);
-            ctx.redirect("/users");
+            var email = ctx.formParam("email");
+            var name = ctx.formParam("name");
+
+            try {
+                var passwordConfirmation = ctx.formParam("passwordConfirmation");
+
+                name = ctx.formParamAsClass("name", String.class)
+                        .check(value -> value.length() > 1, "Слишком короткое имя")
+                        .check(value -> !value.equals("l"), "Эта буква в имени не допускатеся")
+                        .get();
+
+                var password = ctx.formParamAsClass("password", String.class)
+                        .check(value -> value.equals(passwordConfirmation), "Пароли не совпадают")
+                        .get();
+                var user = new User(name, email, password);
+                UserRepository.save(user);
+                ctx.redirect("/users");
+            } catch (ValidationException e) {
+                var page = new BuildUserPage(name, email, e.getErrors());
+                System.out.println(e.getErrors());
+                ctx.render("users/build.jte", model("page", page));
+            }
         });
         
         app.start(7070);
