@@ -6,6 +6,7 @@ import io.javalin.rendering.template.JavalinJte;
 import static io.javalin.rendering.template.TemplateUtil.model;
 
 import io.javalin.validation.ValidationException;
+import org.example.hexlet.controller.UsersController;
 import org.example.hexlet.dto.courses.CoursesPage;
 import org.example.hexlet.dto.hello.HelloPage;
 import org.example.hexlet.dto.users.BuildUserPage;
@@ -75,43 +76,12 @@ public class HelloWorld {
             ctx.render("courses/show.jte", model("page", page));
         });
 
-        app.get(NamedRoutes.usersPath(), ctx -> {
-            var users = UserRepository.getEntities();
-            var page = new UsersPage(users);
-            ctx.render("users/index1.jte", model("page", page));
-        });
+        app.get(NamedRoutes.usersPath(), UsersController::index);
 
-        app.get(NamedRoutes.buildUserPath(), ctx -> {
-            var page = new BuildUserPage();
-            ctx.render("users/build.jte", model("page", page));
-        });
+        app.get(NamedRoutes.buildUserPath(), UsersController::build);
 
-        app.post(NamedRoutes.usersPath(), ctx -> {
+        app.post(NamedRoutes.usersPath(), UsersController::create);
 
-            var email = ctx.formParam("email");
-            var name = ctx.formParam("name");
-
-            try {
-                var passwordConfirmation = ctx.formParam("passwordConfirmation");
-
-                name = ctx.formParamAsClass("name", String.class)
-                        .check(value -> value.length() > 1, "Слишком короткое имя")
-                        .check(value -> !value.equals("l"), "Эта буква в имени не допускается")
-                        .get();
-
-                var password = ctx.formParamAsClass("password", String.class)
-                        .check(value -> value.equals(passwordConfirmation), "Пароли не совпадают")
-                        .get();
-                var user = new User(name, email, password);
-                UserRepository.save(user);
-                ctx.redirect(NamedRoutes.usersPath());
-            } catch (ValidationException e) {
-                var page = new BuildUserPage(name, email, e.getErrors());
-                System.out.println(e.getErrors());
-                ctx.render("users/build.jte", model("page", page));
-            }
-        });
-        
         app.start(7070);
     }
 }
