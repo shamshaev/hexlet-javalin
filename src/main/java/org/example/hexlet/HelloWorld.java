@@ -7,6 +7,7 @@ import static io.javalin.rendering.template.TemplateUtil.model;
 
 import io.javalin.validation.ValidationException;
 import org.example.hexlet.controller.UsersController;
+import org.example.hexlet.dto.MainPage;
 import org.example.hexlet.dto.courses.CoursesPage;
 import org.example.hexlet.dto.hello.HelloPage;
 import org.example.hexlet.dto.users.BuildUserPage;
@@ -39,7 +40,12 @@ public class HelloWorld {
             config.fileRenderer(new JavalinJte());
         });
 
-        app.get("/", ctx -> ctx.render("index.jte"));
+        app.get("/", ctx -> {
+            var visited = Boolean.valueOf(ctx.cookie("visited"));
+            var page = new MainPage(visited);
+            ctx.render("index.jte", model("page", page));
+            ctx.cookie("visited", String.valueOf(true));
+        });
 
         app.get(NamedRoutes.helloPath(), ctx -> {
             var name = ctx.queryParam("name") != null ? ctx.queryParam("name") : "World";
