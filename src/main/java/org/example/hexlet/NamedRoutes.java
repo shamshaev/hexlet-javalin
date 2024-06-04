@@ -32,4 +32,12 @@ public class NamedRoutes {
     public static String gitHubPath() {
         return "https://github.com/shamshaev";
     }
+
+    public static String sessionsPath() {
+        return "/sessions";
+    }
+
+    public static String sessionsDeletePath() {
+        return "/sessions/delete";
+    }
 }

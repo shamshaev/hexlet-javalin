@@ -6,6 +6,7 @@ import io.javalin.rendering.template.JavalinJte;
 import static io.javalin.rendering.template.TemplateUtil.model;
 
 import io.javalin.validation.ValidationException;
+import org.example.hexlet.controller.SessionsController;
 import org.example.hexlet.controller.UsersController;
 import org.example.hexlet.dto.MainPage;
 import org.example.hexlet.dto.courses.CoursesPage;
@@ -42,7 +43,8 @@ public class HelloWorld {
 
         app.get("/", ctx -> {
             var visited = Boolean.valueOf(ctx.cookie("visited"));
-            var page = new MainPage(visited);
+            var currentUser = (String) ctx.sessionAttribute("currentUser");
+            var page = new MainPage(visited, currentUser);
             ctx.render("index.jte", model("page", page));
             ctx.cookie("visited", String.valueOf(true));
         });
@@ -87,6 +89,14 @@ public class HelloWorld {
         app.get(NamedRoutes.buildUserPath(), UsersController::build);
 
         app.post(NamedRoutes.usersPath(), UsersController::create);
+
+        // Отображение формы логина
+        app.get(NamedRoutes.sessionsPath(), SessionsController::build);
+        // Процесс логина
+        app.post(NamedRoutes.sessionsPath(), SessionsController::create);
+        // Процесс выхода из аккаунта
+        app.post(NamedRoutes.sessionsDeletePath(), SessionsController::destroy);
+
 
         app.start(7070);
     }
