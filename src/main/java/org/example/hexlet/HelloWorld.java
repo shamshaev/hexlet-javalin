@@ -17,10 +17,16 @@ import org.example.hexlet.dto.users.UsersPage;
 import org.example.hexlet.model.Course;
 import org.example.hexlet.dto.courses.CoursePage;
 import org.example.hexlet.model.User;
+import org.example.hexlet.repository.BaseRepository;
 import org.example.hexlet.repository.UserRepository;
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class HelloWorld {
 
@@ -30,11 +36,24 @@ public class HelloWorld {
             new Course(3L, "java", "this is my way to IT")
     );
 
-    public static void main(String[] args) {
+    public static Javalin getApp() throws Exception {
 
-        UserRepository.save(new User("john", "john@google.com", "jobs2349"));
-        UserRepository.save(new User("justin", "justin@yahoo.com", "miracle65"));
-        UserRepository.save(new User("natasha", "natasha@apple.com", "great12_4"));
+        var hikariConfig = new HikariConfig();
+        hikariConfig.setJdbcUrl("jdbc:h2:mem:hexlet_project;DB_CLOSE_DELAY=-1;");
+
+        var dataSource = new HikariDataSource(hikariConfig);
+
+        // Получаем путь до файла в src/main/resources
+        var url = HelloWorld.class.getClassLoader().getResourceAsStream("schema.sql");
+        var sql = new BufferedReader(new InputStreamReader(url))
+                .lines().collect(Collectors.joining("\n"));
+
+        // Получаем соединение, создаем стейтмент и выполняем запрос
+        try (var connection = dataSource.getConnection();
+             var statement = connection.createStatement()) {
+            statement.execute(sql);
+        }
+        BaseRepository.dataSource = dataSource;
 
         var app = Javalin.create(config -> {
             config.bundledPlugins.enableDevLogging();
@@ -97,7 +116,16 @@ public class HelloWorld {
         // Процесс выхода из аккаунта
         app.post(NamedRoutes.sessionsDeletePath(), SessionsController::destroy);
 
+        return app;
+    }
 
+    public static void main(String[] args) throws Exception {
+
+        Javalin app = getApp();
         app.start(7070);
+
+        UserRepository.save(new User("john", "john@google.com", "jobs2349"));
+        UserRepository.save(new User("justin", "justin@yahoo.com", "miracle65"));
+        UserRepository.save(new User("natasha", "natasha@apple.com", "great12_4"));
     }
 }

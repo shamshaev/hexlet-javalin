@@ -13,8 +13,10 @@ import org.example.hexlet.repository.UserRepository;
 import io.javalin.http.Context;
 import io.javalin.http.NotFoundResponse;
 
+import java.sql.SQLException;
+
 public class UsersController {
-    public static void index(Context ctx) {
+    public static void index(Context ctx) throws SQLException {
         var users = UserRepository.getEntities();
         var page = new UsersPage(users);
         page.setFlash(ctx.consumeSessionAttribute("flash"));
@@ -34,7 +36,7 @@ public class UsersController {
         ctx.render("users/build.jte", model("page", page));
     }
 
-    public static void create(Context ctx) {
+    public static void create(Context ctx) throws SQLException {
         var email = ctx.formParam("email");
         var name = ctx.formParam("name");
 
