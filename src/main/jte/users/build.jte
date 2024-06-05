@@ -3,6 +3,7 @@
 @param BuildUserPage page
 
 @template.layout.page(
+page = page,
 content = @`
     <div style="text-align: center; height: 600px; overflow: auto;">
 
