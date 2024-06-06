@@ -36,7 +36,7 @@ public class HelloWorld {
     public static Javalin getApp() throws Exception {
 
         var hikariConfig = new HikariConfig();
-        hikariConfig.setJdbcUrl("jdbc:postgresql://${HOST}:${DB_PORT}/${DATABASE}?password=${PASSWORD}&user=${USERNAME}");
+        hikariConfig.setJdbcUrl("jdbc:postgresql://hexlet_javalin_training_db_user:uchhPAyGsoKeVb2OIspTOjLpQIhbBFjJ@dpg-cpgp54sf7o1s738ita50-a/hexlet_javalin_training_db");
 
         var dataSource = new HikariDataSource(hikariConfig);
 
