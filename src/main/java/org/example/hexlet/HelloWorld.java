@@ -5,15 +5,12 @@ import io.javalin.http.NotFoundResponse;
 import io.javalin.rendering.template.JavalinJte;
 import static io.javalin.rendering.template.TemplateUtil.model;
 
-import io.javalin.validation.ValidationException;
 import org.example.hexlet.controller.SessionsController;
 import org.example.hexlet.controller.UsersController;
 import org.example.hexlet.dto.MainPage;
 import org.example.hexlet.dto.courses.CoursesPage;
 import org.example.hexlet.dto.hello.HelloPage;
-import org.example.hexlet.dto.users.BuildUserPage;
 import org.example.hexlet.dto.users.UserPage;
-import org.example.hexlet.dto.users.UsersPage;
 import org.example.hexlet.model.Course;
 import org.example.hexlet.dto.courses.CoursePage;
 import org.example.hexlet.model.User;
@@ -39,7 +36,7 @@ public class HelloWorld {
     public static Javalin getApp() throws Exception {
 
         var hikariConfig = new HikariConfig();
-        hikariConfig.setJdbcUrl("jdbc:h2:mem:hexlet_project;DB_CLOSE_DELAY=-1;");
+        hikariConfig.setJdbcUrl("jdbc:postgresql://${HOST}:${DB_PORT}/${DATABASE}?password=${PASSWORD}&user=${USERNAME}");
 
         var dataSource = new HikariDataSource(hikariConfig);
 

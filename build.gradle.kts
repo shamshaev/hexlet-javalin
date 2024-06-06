@@ -4,6 +4,7 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 plugins {
     id("java")
     application
+    id("com.github.johnrengelman.shadow") version "8.1.1"
 }
 
 application {
@@ -26,7 +27,6 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter")
     implementation("com.h2database:h2:2.2.220")
     implementation("com.zaxxer:HikariCP:5.0.1")
-
 }
 
 tasks.test {
