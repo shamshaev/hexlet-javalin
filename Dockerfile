@@ -6,4 +6,4 @@ COPY /app .
 
 RUN gradle installDist
 
-CMD ./build/install/HexletJavalin/bin/HexletJavalin
+CMD ./build/install/hexlet-javalin/bin/hexlet-javalin
