@@ -35,10 +35,14 @@ public class HelloWorld {
 
     public static Javalin getApp() throws Exception {
 
-        var hikariConfig = new HikariConfig();
-        hikariConfig.setJdbcUrl(System.getenv(JDBC_DATABASE_URL));
+//        var hikariConfig = new HikariConfig();
+//        var jdbcUrl = "jdbc:postgres://hexlet_javalin_training_db_user:uchhPAyGsoKeVb2OIspTOjLpQIhbBFjJ@dpg-cpgp54sf7o1s738ita50-a.singapore-postgres.render.com/hexlet_javalin_training_db";
+//        hikariConfig.setJdbcUrl(jdbcUrl);
+//
+//        var dataSource = new HikariDataSource(hikariConfig);
 
-        var dataSource = new HikariDataSource(hikariConfig);
+        HikariConfig hikariConfig = new HikariConfig("src/main/resources/hikari.properties");
+        HikariDataSource dataSource = new HikariDataSource(hikariConfig);
 
         // Получаем путь до файла в src/main/resources
         var url = HelloWorld.class.getClassLoader().getResourceAsStream("schema.sql");
