@@ -26,34 +26,47 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class HelloWorld {
-
     private static final List<Course> COURSES = List.of(
             new Course(1L, "php", "the easiest language to get in IT"),
             new Course(2L, "python", "the most popular language among rookies"),
             new Course(3L, "java", "this is my way to IT")
     );
 
-    public static Javalin getApp() throws Exception {
+    private static int getPort() {
+        String port = System.getenv().getOrDefault("PORT", "7070");
+        return Integer.valueOf(port);
+    }
 
-//        var hikariConfig = new HikariConfig();
-//        var jdbcUrl = "jdbc:postgres://hexlet_javalin_training_db_user:uchhPAyGsoKeVb2OIspTOjLpQIhbBFjJ@dpg-cpgp54sf7o1s738ita50-a.singapore-postgres.render.com/hexlet_javalin_training_db";
-//        hikariConfig.setJdbcUrl(jdbcUrl);
-//
-//        var dataSource = new HikariDataSource(hikariConfig);
+    private static String getJdbcUrl() {
+        var jdbcH2Url = "jdbc:h2:mem:hexlet_project;DB_CLOSE_DELAY=-1;";
+        return System.getenv().getOrDefault("JDBC_DATABASE_URL", jdbcH2Url);
+    }
 
-        HikariConfig hikariConfig = new HikariConfig("src/main/resources/hikari.properties");
-        HikariDataSource dataSource = new HikariDataSource(hikariConfig);
-
-        // Получаем путь до файла в src/main/resources
+    private static String getSql(String jdbcUrl) {
         var url = HelloWorld.class.getClassLoader().getResourceAsStream("schema.sql");
         var sql = new BufferedReader(new InputStreamReader(url))
                 .lines().collect(Collectors.joining("\n"));
 
-        // Получаем соединение, создаем стейтмент и выполняем запрос
+        return jdbcUrl.contains("h2") ? sql : sql.replace("AUTO_INCREMENT", "GENERATED ALWAYS AS IDENTITY");
+    }
+
+    public static Javalin getApp() throws Exception {
+
+
+        // Это подключение использовалось мною для деплоя на Render при прохождении курса
+//        var hikariConfig = new HikariConfig("src/main/resources/hikari.properties");
+//        var dataSource = new HikariDataSource(hikariConfig);
+
+        // Это подключение пришло из 4-го проекта
+        var hikariConfig = new HikariConfig();
+        hikariConfig.setJdbcUrl(getJdbcUrl());
+        var dataSource = new HikariDataSource(hikariConfig);
+
         try (var connection = dataSource.getConnection();
              var statement = connection.createStatement()) {
-            statement.execute(sql);
+            statement.execute(getSql(getJdbcUrl()));
         }
+
         BaseRepository.dataSource = dataSource;
 
         var app = Javalin.create(config -> {
@@ -123,7 +136,7 @@ public class HelloWorld {
     public static void main(String[] args) throws Exception {
 
         Javalin app = getApp();
-        app.start(7070);
+        app.start(getPort());
 
         UserRepository.save(new User("john", "john@google.com", "jobs2349"));
         UserRepository.save(new User("justin", "justin@yahoo.com", "miracle65"));
