@@ -59,13 +59,12 @@ public class HelloWorld {
 
         // Это подключение пришло из 4-го проекта
         var hikariConfig = new HikariConfig();
-        var jdbcUrl = "jdbc:postgresql://dpg-cpgp54sf7o1s738ita50-a:5432/hexlet_javalin_training_db?password=uchhPAyGsoKeVb2OIspTOjLpQIhbBFjJ&user=hexlet_javalin_training_db_user";
-        hikariConfig.setJdbcUrl(jdbcUrl);
+        hikariConfig.setJdbcUrl(getJdbcUrl());
         var dataSource = new HikariDataSource(hikariConfig);
 
         try (var connection = dataSource.getConnection();
              var statement = connection.createStatement()) {
-            statement.execute(getSql(jdbcUrl));
+            statement.execute(getSql(getJdbcUrl()));
         }
 
         BaseRepository.dataSource = dataSource;
